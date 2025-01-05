@@ -41,6 +41,19 @@ automake_substitution(
     substitutions = AUTOMAKE_SUBSTITUTIONS_AARCH64,
 )
 
+AUTOMAKE_SUBSTITUTIONS_AARCH64 = {
+    "TARGET": "AARCH64",
+    "HAVE_LONG_DOUBLE": "0",
+    "FFI_EXEC_TRAMPOLINE_TABLE": "1",
+}
+
+automake_substitution(
+    name = "ffi_h_aarch64",
+    src = "include/ffi.h.in",
+    out = "generated/include_aarch64/ffi.h",
+    substitutions = AUTOMAKE_SUBSTITUTIONS_AARCH64,
+)
+
 genrule(
     name = "fficonfig_h",
     srcs = ["fficonfig.h.in"],
@@ -91,10 +104,41 @@ ARM64_MAC_DEFINES = [
     "EH_FRAME_FLAGS=\"a\"",
 ]
 
+ARM64_MAC_DEFINES = [
+    "HAVE_ALLOCA_H=1",
+    "HAVE_AS_CFI_PSEUDO_OP=1",
+    "HAVE_HIDDEN_VISIBILITY_ATTRIBUTE=1",
+    "HAVE_STDIO_H=1",
+    "HAVE_STDLIB_H=1",
+    "HAVE_STRING_H=1",
+    "HAVE_INTTYPES_H=1",
+    "HAVE_STDINT_H=1",
+    "HAVE_STRINGS_H=1",
+    "HAVE_SYS_STAT_H=1",
+    "HAVE_SYS_TYPES_H=1",
+    "HAVE_UNISTD_H=1",
+    "STDC_HEADERS=1",
+    "HAVE_DLFCN_H=1",
+    "SIZEOF_SIZE_T=8",
+    "HAVE_MEMCPY=1",
+    "SIZEOF_DOUBLE=8",
+    "SIZEOF_LONG_DOUBLE=8",
+    "SYMBOL_UNDERSCORE=1",
+    "FFI_EXEC_TRAMPOLINE_TABLE=1",
+    "HAVE_RO_EH_FRAME=1",
+    "EH_FRAME_FLAGS=\"a\"",
+]
+
 copy(
     name = "ffitarget_h",
     src = "src/x86/ffitarget.h",
     out = "generated/include/ffitarget.h",
+)
+
+copy(
+    name = "ffitarget_h_aarch64",
+    src = "src/aarch64/ffitarget.h",
+    out = "generated/include_aarch64/ffitarget.h",
 )
 
 copy(
@@ -109,12 +153,14 @@ cc_library(
         "generated/fficonfig.h",
         "include/ffi_cfi.h",
         "include/ffi_common.h",
+        "include/tramp.h",
         "src/closures.c",
         "src/debug.c",
         "src/java_raw_api.c",
         "src/prep_cif.c",
         "src/raw_api.c",
         "src/types.c",
+        "src/tramp.c",
     ] + select({
         "@bazel_tools//src/conditions:darwin_arm64": [
             ":ffi_h_aarch64",
@@ -122,8 +168,6 @@ cc_library(
             "src/aarch64/sysv.S",
             "src/aarch64/ffi.c",
             "src/aarch64/internal.h",
-            "src/tramp.c",
-            "include/tramp.h",
         ],
         "@bazel_tools//src/conditions:darwin_x86_64": [
             ":ffi_h",
@@ -152,10 +196,27 @@ cc_library(
     copts = [
         "-Wno-deprecated-declarations",
         "-fno-sanitize=all",
+        "-fno-sanitize=all",
     ],
     includes = [
         "generated",
         "include",
+    ] + select({
+        "@bazel_tools//src/conditions:darwin_arm64": [
+           "generated/include_aarch64",
+        ],
+        "@bazel_tools//src/conditions:darwin_x86_64": [
+            "generated/include",
+        ],
+        "@bazel_tools//src/conditions:linux": [
+            "generated/include",
+        ],
+    }),
+    defines = select({
+        "@bazel_tools//src/conditions:darwin_arm64": ARM64_MAC_DEFINES,
+        "@bazel_tools//src/conditions:darwin_x86_64": DEFINES,
+        "@bazel_tools//src/conditions:linux": DEFINES,
+    }),
     ] + select({
         "@bazel_tools//src/conditions:darwin_arm64": [
            "generated/include_aarch64",
@@ -203,7 +264,7 @@ cc_library(
     "offsets",
     "pr1172638",
     "promotion",
-    "pyobjc-tc",
+    "pyobjc_tc",
     "return_dbl",
     "return_dbl1",
     "return_dbl2",
@@ -268,9 +329,13 @@ cc_library(
     srcs = [
         "testsuite/libffi.closures/ffitest.h",
         "testsuite/libffi.closures/%s.c" % closures_test,
+        "testsuite/libffi.call/ffitest.h",
     ],
     deps = [
         ":libffi",
+    ],
+    includes = [
+        ".",  
     ],
 ) for closures_test in [
     "closure_fn0",
@@ -340,13 +405,11 @@ cc_library(
     "cls_sshort",
     "cls_struct_va1",
     "cls_uchar",
-    "cls_uchar_va",
     "cls_uint",
     "cls_uint_va",
     "cls_ulong_va",
     "cls_ulonglong",
     "cls_ushort",
-    "cls_ushort_va",
     "err_bad_abi",
     "huge_struct",
     "nested_struct",

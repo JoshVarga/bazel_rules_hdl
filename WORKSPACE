@@ -24,11 +24,12 @@ http_archive(
     urls = ["https://github.com/bazelbuild/rules_cc/releases/download/0.0.9/rules_cc-0.0.9.tar.gz"],
 )
 
-http_archive(
-    name = "com_grail_bazel_toolchain",
-    sha256 = "ddad1bde0eb9d470ea58500681a7deacdf55c714adf4b89271392c4687acb425",
-    strip_prefix = "toolchains_llvm-7e7c7cf1f965f348861085183d79b6a241764390",
-    urls = ["https://github.com/grailbio/bazel-toolchain/archive/7e7c7cf1f965f348861085183d79b6a241764390.tar.gz"],
+maybe(
+    http_archive,
+    name = "toolchains_llvm",
+    integrity = "sha256-RVp0bZsDrelQAtxswWOLB4j8zCXQy/cSe1m3wL/E2PU=",
+    strip_prefix = "toolchains_llvm-01132cfdae7d7187a885cf79d5a3ac1ed8a02e5a",
+    url = "https://github.com/bazel-contrib/toolchains_llvm/archive/01132cfdae7d7187a885cf79d5a3ac1ed8a02e5a.tar.gz",
 )
 
 http_archive(
@@ -44,32 +45,8 @@ load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 
 bazel_skylib_workspace()
 
-maybe(
-    http_archive,
-    name = "rules_python",
-    sha256 = "e3f1cc7a04d9b09635afb3130731ed82b5f58eadc8233d4efb59944d92ffc06f",
-    strip_prefix = "rules_python-0.33.2",
-    url = "https://github.com/bazelbuild/rules_python/releases/download/0.33.2/rules_python-0.33.2.tar.gz",
-)
 
-load(
-    "@rules_python//python:repositories.bzl",
-    "py_repositories",
-    "python_register_toolchains",
-)
 
-# Must be called before using anything from rules_python.
-# https://github.com/bazelbuild/rules_python/issues/1560#issuecomment-1815118394
-py_repositories()
-
-python_register_toolchains(
-    name = "python39",
-
-    # Required for our containerized CI environments; we do not recommend
-    # building bazel_rules_hdl as root normally.
-    ignore_root_user_error = True,
-    python_version = "3.9",
-)
 
 # This sysroot is used by github.com/vsco/bazel-toolchains.
 # Disabled for now waiting on https://github.com/pybind/pybind11_bazel/pull/29
@@ -88,15 +65,19 @@ python_register_toolchains(
 #     urls = ["https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain/3c248ba4290a5ad07085b7af07e6785bf1ae5b66/debian_stretch_amd64_sysroot.tar.xz"],
 # )
 
-load("@com_grail_bazel_toolchain//toolchain:deps.bzl", "bazel_toolchain_dependencies")
+load("@toolchains_llvm//toolchain:deps.bzl", "bazel_toolchain_dependencies")
 
 bazel_toolchain_dependencies()
 
-load("@com_grail_bazel_toolchain//toolchain:rules.bzl", "llvm_toolchain")
+load("@toolchains_llvm//toolchain:rules.bzl", "llvm_toolchain")
 
 llvm_toolchain(
     name = "llvm_toolchain",
-    llvm_version = "10.0.1",
+    llvm_versions = {
+        "": "10.0.1",
+        "darwin-aarch64": "17.0.6",
+        "darwin-x86_64": "17.0.6",
+    },
     sha256 = {
         "linux": "02a73cfa031dfe073ba8d6c608baf795aa2ddc78eed1b3e08f3739b803545046",
     },
@@ -117,6 +98,38 @@ llvm_toolchain(
     # sysroot = {
     #     "linux": "@org_chromium_sysroot_linux_x64//:sysroot",
     # },
+)
+
+load("@llvm_toolchain//:toolchains.bzl", "llvm_register_toolchains")
+
+llvm_register_toolchains()
+
+# Released on 2024-09-24, current as of 2024-10-01
+maybe(
+    http_archive,
+    name = "rules_python",
+    sha256 = "ca77768989a7f311186a29747e3e95c936a41dffac779aff6b443db22290d913",
+    strip_prefix = "rules_python-0.36.0",
+    url = "https://github.com/bazelbuild/rules_python/releases/download/0.36.0/rules_python-0.36.0.tar.gz",
+)
+
+load(
+    "@rules_python//python:repositories.bzl",
+    "py_repositories",
+    "python_register_toolchains",
+)
+
+# Must be called before using anything from rules_python.
+# https://github.com/bazelbuild/rules_python/issues/1560#issuecomment-1815118394
+py_repositories()
+
+python_register_toolchains(
+    name = "python39",
+
+    # Required for our containerized CI environments; we do not recommend
+    # building bazel_rules_hdl as root normally.
+    ignore_root_user_error = True,
+    python_version = "3.11",
 )
 
 maybe(
@@ -188,3 +201,8 @@ pip_parse(
     python_interpreter_target = "@python39_host//:python",
     requirements_lock = "//dependency_support:pip_requirements.txt",
 )
+
+load("@rules_hdl_pip_deps_to_vendor//:requirements.bzl", rules_hdl_pip_install_deps = "install_deps")
+
+rules_hdl_pip_install_deps()
+

@@ -18,6 +18,14 @@ build --host_cxxopt "-std=c++17"
 build --host_cxxopt "-ffp-contract=off"
 build --crosstool_top=@llvm_toolchain//:toolchain
 
+# Disable rules_python Starlark rules for Bazel 7+.
+# See https://github.com/bazelbuild/rules_python/issues/1069#issuecomment-1942053014.
+build --action_env=RULES_PYTHON_ENABLE_PYSTAR=0
+
+# Depending on the installation, clang or clang-tidy need to be told that
+# a c++ file is, indeed, containing c++ (bazel just invokes clang, not clang++)
+build --cxxopt "-xc++"                 --host_cxxopt "-xc++"
+
 build:ciremotebuild --crosstool_top=@llvm_toolchain//:toolchain
 build:ciremotebuild --bes_backend=grpcs://cloud.buildbuddy.io
 build:ciremotebuild --remote_cache=https://storage.googleapis.com/bazel-cache-rules-hdl

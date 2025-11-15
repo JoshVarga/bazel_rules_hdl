@@ -21,12 +21,35 @@ def vpi_binary(name, out, srcs, **kwargs):
     """Creates a .vpi file with the given name from the given sources.
 
     All the extra arguments are passed directly to cc_binary.
+
+    Args:
+      name: The name of the target.
+      out: The name of the output .vpi or .tgt file.
+      srcs: Source files for the plugin.
+      **kwargs: Additional arguments passed to cc_binary.
     """
     cc_target = name + "_shared"
+    
+    # Add platform-specific linker flags
+    linkopts = kwargs.pop("linkopts", [])
+    linkopts = linkopts + select({
+        "@platforms//os:macos": [
+            # Allow undefined symbols to be resolved at runtime from the loading executable
+            "-undefined",
+            "dynamic_lookup",
+        ],
+        "@platforms//os:linux": [
+            # On Linux, allow undefined symbols in shared libraries
+            "-Wl,--allow-shlib-undefined",
+        ],
+        "//conditions:default": [],
+    })
+    
     cc_binary(
         name = cc_target,
         srcs = srcs,
         linkshared = 1,
+        linkopts = linkopts,
         **kwargs
     )
 

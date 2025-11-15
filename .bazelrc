@@ -47,6 +47,14 @@ test:ciremotebuild --remote_timeout=3600
 build --incompatible_disallow_empty_glob=true
 
 ###############################################################################
+## Platform-specific configurations
+###############################################################################
+
+# macOS ARM64 configuration: Use system toolchain instead of LLVM
+build:macos --crosstool_top=@bazel_tools//tools/cpp:toolchain
+build:macos --host_crosstool_top=@bazel_tools//tools/cpp:toolchain
+
+###############################################################################
 ## User flags
 ###############################################################################
 # Optionally allow users to define custom flags when developing new features.

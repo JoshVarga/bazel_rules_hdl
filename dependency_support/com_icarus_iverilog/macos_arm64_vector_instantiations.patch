@@ -1,0 +1,11 @@
+--- a/vvp/vvp_net.cc
++++ b/vvp/vvp_net.cc
+@@ -2046,6 +2046,8 @@
+ 
+ template bool vector4_to_value(const vvp_vector4_t&vec, bool&overflow_flag,
+                                unsigned long&val);
++template bool vector4_to_value(const vvp_vector4_t&vec, bool&overflow_flag,
++                               unsigned long long&val);
+ #ifndef UL_AND_TIME64_SAME
+ template bool vector4_to_value(const vvp_vector4_t&vec, bool&overflow_flag,
+                                vvp_time64_t&val);

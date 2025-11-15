@@ -27,4 +27,8 @@ def com_icarus_iverilog():
         strip_prefix = "iverilog-12_0",
         sha256 = "a68cb1ef7c017ef090ebedb2bc3e39ef90ecc70a3400afb4aa94303bc3beaa7d",
         build_file = Label("//dependency_support:com_icarus_iverilog/bundled.BUILD.bazel"),
+        patches = [
+            Label("//dependency_support:com_icarus_iverilog/macos_arm64_vector_instantiations.patch"),
+        ],
+        patch_args = ["-p1"],
     )

@@ -1,0 +1,15 @@
+diff --git a/driver/main.c b/driver/main.c
+index 1234567..abcdefg 100644
+--- a/driver/main.c
++++ b/driver/main.c
+@@ -60,6 +60,9 @@
+ #include <sys/types.h>
+ #ifdef HAVE_SYS_WAIT_H
+ #include <sys/wait.h>
++#endif
++#if defined(__APPLE__)
++# include <mach-o/dyld.h>
+ #endif
+ 
+ #ifdef __MINGW32__
+

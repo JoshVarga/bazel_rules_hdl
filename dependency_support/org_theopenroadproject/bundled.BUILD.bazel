@@ -76,6 +76,10 @@ cc_binary(
     features = ["-use_header_modules"],
     linkopts = select({
         ":platform_cli": [],
+        "@platforms//os:macos": [
+            "-Wl,-undefined,dynamic_lookup",
+        ],
+        "//conditions:default": [],
     }),
     visibility = ["//visibility:public"],
     deps = OPENROAD_BINARY_DEPS + select({

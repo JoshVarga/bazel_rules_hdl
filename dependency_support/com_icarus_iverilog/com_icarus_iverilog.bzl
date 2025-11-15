@@ -29,6 +29,7 @@ def com_icarus_iverilog():
         build_file = Label("//dependency_support:com_icarus_iverilog/bundled.BUILD.bazel"),
         patches = [
             Label("//dependency_support:com_icarus_iverilog/macos_arm64_vector_instantiations.patch"),
+            Label("//dependency_support:com_icarus_iverilog/macos_mach_o_dyld_include.patch"),
         ],
         patch_args = ["-p1"],
     )

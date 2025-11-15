@@ -42,6 +42,21 @@ cc_binary(
     visibility = ["//visibility:public"],
 )
 
+# Patch zutil.c to fix K&R C style function declarations for C++ compilation
+genrule(
+    name = "patch_zutil",
+    srcs = ["src/misc/zlib/zutil.c"],
+    outs = ["src/misc/zlib/zutil_patched.c"],
+    cmd = """
+        # Replace K&R style function declaration with ANSI C style
+        # Add extern to z_errmsg for external linkage in C++
+        sed -e '/^void ZLIB_INTERNAL z_error (m)/,/^{/c\\
+void ZLIB_INTERNAL z_error (char *m) {' \
+            -e 's/^const char \\* const z_errmsg/extern const char * const z_errmsg/' \
+            $< > $@
+    """,
+)
+
 cc_library(
     name = "abc-lib",
     srcs = glob(["src/**/*.h"]) + glob(["src/**/*.hpp"]) + [
@@ -811,7 +826,7 @@ cc_library(
         "src/misc/zlib/inftrees.c",
         "src/misc/zlib/trees.c",
         "src/misc/zlib/uncompr.c",
-        "src/misc/zlib/zutil.c",
+        ":patch_zutil",  # Use patched zutil.c for C++ compatibility
         "src/opt/cgt/cgtAig.c",
         "src/opt/cgt/cgtCore.c",
         "src/opt/cgt/cgtDecide.c",
@@ -1228,7 +1243,15 @@ cc_library(
         "ABC_NAMESPACE=abc",
     ],
     includes = ["src/"],
-    linkopts = ["-ldl", "-lpthread"],
+    linkopts = [
+        "-ldl",
+        "-lpthread",
+    ] + select({
+        "@bazel_tools//src/conditions:darwin": [
+            "-lz",  # Link against system zlib on macOS for gz* functions
+        ],
+        "//conditions:default": [],
+    }),
     linkstatic = True,
     textual_hdrs = glob(
         [

@@ -41,11 +41,11 @@ def pseudo_configure(name, out, src = None, defs = [], mappings = {}, additional
         cmd += "echo"
     all_defs = ""
     for def_ in defs:
-        cmd += r"| sed 's/#\s*undef \b\(" + def_ + r"\)\b/#define \1 1/'"
+        cmd += r"| sed -E 's/#[[:space:]]*undef[[:space:]]+(" + def_ + r")/#define \1 1/'"
         all_defs += "#define " + def_ + " 1\\n"
     for key, value in mappings.items():
-        cmd += r"| sed 's/#\s*undef \b" + key + r"\b/#define " + str(key) + " " + str(value) + "/'"
-        cmd += r"| sed 's/#\s*define \b\(" + key + r"\)\b 0/#define \1 " + str(value) + "/'"
+        cmd += r"| sed -E 's/#[[:space:]]*undef[[:space:]]+" + key + r"/#define " + str(key) + " " + str(value) + "/'"
+        cmd += r"| sed -E 's/#[[:space:]]*define[[:space:]]+(" + key + r")[[:space:]]+0/#define \1 " + str(value) + "/'"
         all_defs += "#define " + key + " " + value + "\\n"
     cmd += r"| sed 's/\@DEFS\@/" + all_defs + "/'"
     cmd += " >> $@"

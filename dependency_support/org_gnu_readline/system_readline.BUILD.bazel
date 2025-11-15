@@ -1,0 +1,68 @@
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+""" Use system-installed readline on macOS """
+
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+licenses(["restricted"])  # GPL v3
+
+# Copy readline headers from Homebrew installation
+genrule(
+    name = "generate_readline_headers",
+    outs = [
+        "readline/readline.h",
+        "readline/history.h",
+        "readline/chardefs.h",
+        "readline/keymaps.h",
+        "readline/rlconf.h",
+        "readline/rlstdc.h",
+        "readline/rltypedefs.h",
+        "readline/tilde.h",
+    ],
+    cmd = """
+        mkdir -p $(@D)/readline
+        # Copy headers from Homebrew readline
+        cp /opt/homebrew/opt/readline/include/readline/readline.h $(location readline/readline.h)
+        cp /opt/homebrew/opt/readline/include/readline/history.h $(location readline/history.h)
+        cp /opt/homebrew/opt/readline/include/readline/chardefs.h $(location readline/chardefs.h)
+        cp /opt/homebrew/opt/readline/include/readline/keymaps.h $(location readline/keymaps.h)
+        cp /opt/homebrew/opt/readline/include/readline/rlconf.h $(location readline/rlconf.h)
+        cp /opt/homebrew/opt/readline/include/readline/rlstdc.h $(location readline/rlstdc.h)
+        cp /opt/homebrew/opt/readline/include/readline/rltypedefs.h $(location readline/rltypedefs.h)
+        # tilde.h might not exist, create a minimal one
+        echo '#ifndef _READLINE_TILDE_H_' > $(location readline/tilde.h)
+        echo '#define _READLINE_TILDE_H_' >> $(location readline/tilde.h)
+        echo '#endif' >> $(location readline/tilde.h)
+    """,
+)
+
+# This library uses the Homebrew-installed readline
+cc_library(
+    name = "readline",
+    hdrs = [":generate_readline_headers"],
+    includes = ["."],
+    linkopts = [
+        "-L/opt/homebrew/opt/readline/lib",
+        "-lreadline",
+    ],
+)
+
+cc_library(
+    name = "prefixed_readline_header",
+    hdrs = [":generate_readline_headers"],
+    includes = ["."],
+)

@@ -127,11 +127,17 @@ cc_binary(
         "libmisc",
         ".",
     ],
-    linkopts = [
-        "-ldl",
-        "-Wl,--export-dynamic",
-        "-Wl,-no-pie",
-    ],
+    linkopts = select({
+        "@platforms//os:linux": [
+            "-ldl",
+            "-Wl,--export-dynamic",
+            "-Wl,-no-pie",
+        ],
+        "@platforms//os:macos": [
+            "-Wl,-export_dynamic",
+        ],
+        "//conditions:default": ["-ldl"],
+    }),
     deps = [
         ":ivl-misc",
         ":vpi_user",
@@ -228,10 +234,16 @@ cc_binary(
         "vvp",
         ".",
     ],
-    linkopts = [
-        "-ldl",
-        "-Wl,--export-dynamic",
-    ],
+    linkopts = select({
+        "@platforms//os:linux": [
+            "-ldl",
+            "-Wl,--export-dynamic",
+        ],
+        "@platforms//os:macos": [
+            "-Wl,-export_dynamic",
+        ],
+        "//conditions:default": ["-ldl"],
+    }),
     deps = [
         ":vpi_user",
         "@org_gnu_readline//:readline",

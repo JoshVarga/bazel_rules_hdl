@@ -21,32 +21,35 @@ workspace(name = "rules_hdl")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 
-http_archive(
-    name = "rules_cc",
-    sha256 = "2037875b9a4456dce4a79d112a8ae885bbc4aad968e6587dca6e64f3a0900cdf",
-    strip_prefix = "rules_cc-0.0.9",
-    urls = ["https://github.com/bazelbuild/rules_cc/releases/download/0.0.9/rules_cc-0.0.9.tar.gz"],
-)
+# NOTE: rules_cc is now managed via MODULE.bazel when Bzlmod is enabled
+# http_archive(
+#     name = "rules_cc",
+#     sha256 = "2037875b9a4456dce4a79d112a8ae885bbc4aad968e6587dca6e64f3a0900cdf",
+#     strip_prefix = "rules_cc-0.0.9",
+#     urls = ["https://github.com/bazelbuild/rules_cc/releases/download/0.0.9/rules_cc-0.0.9.tar.gz"],
+# )
 
-http_archive(
-    name = "com_grail_bazel_toolchain",
-    sha256 = "ddad1bde0eb9d470ea58500681a7deacdf55c714adf4b89271392c4687acb425",
-    strip_prefix = "toolchains_llvm-7e7c7cf1f965f348861085183d79b6a241764390",
-    urls = ["https://github.com/grailbio/bazel-toolchain/archive/7e7c7cf1f965f348861085183d79b6a241764390.tar.gz"],
-)
+# NOTE: LLVM toolchain disabled - causes @@cc_compatibility_proxy cycle with Bzlmod
+# http_archive(
+#     name = "com_grail_bazel_toolchain",
+#     sha256 = "ddad1bde0eb9d470ea58500681a7deacdf55c714adf4b89271392c4687acb425",
+#     strip_prefix = "toolchains_llvm-7e7c7cf1f965f348861085183d79b6a241764390",
+#     urls = ["https://github.com/grailbio/bazel-toolchain/archive/7e7c7cf1f965f348861085183d79b6a241764390.tar.gz"],
+# )
 
-http_archive(
-    name = "bazel_skylib",
-    sha256 = "74d544d96f4a5bb630d465ca8bbcfe231e3594e5aae57e1edbf17a6eb3ca2506",
-    urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.3.0/bazel-skylib-1.3.0.tar.gz",
-        "https://github.com/bazelbuild/bazel-skylib/releases/download/1.3.0/bazel-skylib-1.3.0.tar.gz",
-    ],
-)
+# NOTE: bazel_skylib is now managed via MODULE.bazel when Bzlmod is enabled
+# http_archive(
+#     name = "bazel_skylib",
+#     sha256 = "74d544d96f4a5bb630d465ca8bbcfe231e3594e5aae57e1edbf17a6eb3ca2506",
+#     urls = [
+#         "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.3.0/bazel-skylib-1.3.0.tar.gz",
+#         "https://github.com/bazelbuild/bazel-skylib/releases/download/1.3.0/bazel-skylib-1.3.0.tar.gz",
+#     ],
+# )
 
-load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
+# load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 
-bazel_skylib_workspace()
+# bazel_skylib_workspace()
 
 maybe(
     http_archive,
@@ -92,36 +95,37 @@ python_register_toolchains(
 #     urls = ["https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain/3c248ba4290a5ad07085b7af07e6785bf1ae5b66/debian_stretch_amd64_sysroot.tar.xz"],
 # )
 
-load("@com_grail_bazel_toolchain//toolchain:deps.bzl", "bazel_toolchain_dependencies")
-
-bazel_toolchain_dependencies()
-
-load("@com_grail_bazel_toolchain//toolchain:rules.bzl", "llvm_toolchain")
-
-llvm_toolchain(
-    name = "llvm_toolchain",
-    llvm_version = "10.0.1",
-    sha256 = {
-        "linux": "02a73cfa031dfe073ba8d6c608baf795aa2ddc78eed1b3e08f3739b803545046",
-    },
-    strip_prefix = {
-        "linux": "clang+llvm-10.0.1-x86_64-pc-linux-gnu",
-    },
-    urls = {
-        "linux": [
-            # Use a custom built Clang+LLVM binrary distribution that is more portable than
-            # the official builds because it's built against an older glibc and does not have
-            # dynamic library dependencies to tinfo, gcc_s or stdlibc++.
-            #
-            # For more details, see the files under toolchains/clang.
-            "https://github.com/retone/deps/releases/download/na5/clang+llvm-10.0.1-x86_64-pc-linux-gnu.tar.xz",
-        ],
-    },
-    # Disabled for now waiting on https://github.com/pybind/pybind11_bazel/pull/29
-    # sysroot = {
-    #     "linux": "@org_chromium_sysroot_linux_x64//:sysroot",
-    # },
-)
+# NOTE: LLVM toolchain setup disabled with Bzlmod
+# load("@com_grail_bazel_toolchain//toolchain:deps.bzl", "bazel_toolchain_dependencies")
+# 
+# bazel_toolchain_dependencies()
+# 
+# load("@com_grail_bazel_toolchain//toolchain:rules.bzl", "llvm_toolchain")
+# 
+# llvm_toolchain(
+#     name = "llvm_toolchain",
+#     llvm_version = "10.0.1",
+#     sha256 = {
+#         "linux": "02a73cfa031dfe073ba8d6c608baf795aa2ddc78eed1b3e08f3739b803545046",
+#     },
+#     strip_prefix = {
+#         "linux": "clang+llvm-10.0.1-x86_64-pc-linux-gnu",
+#     },
+#     urls = {
+#         "linux": [
+#             # Use a custom built Clang+LLVM binrary distribution that is more portable than
+#             # the official builds because it's built against an older glibc and does not have
+#             # dynamic library dependencies to tinfo, gcc_s or stdlibc++.
+#             #
+#             # For more details, see the files under toolchains/clang.
+#             "https://github.com/retone/deps/releases/download/na5/clang+llvm-10.0.1-x86_64-pc-linux-gnu.tar.xz",
+#         ],
+#     },
+#     # Disabled for now waiting on https://github.com/pybind/pybind11_bazel/pull/29
+#     # sysroot = {
+#     #     "linux": "@org_chromium_sysroot_linux_x64//:sysroot",
+#     # },
+# )
 
 maybe(
     http_archive,
@@ -135,25 +139,27 @@ load("@rules_7zip//:setup.bzl", "setup_7zip")
 
 setup_7zip()
 
-maybe(
-    http_archive,
-    name = "bazel_features",
-    sha256 = "ba1282c1aa1d1fffdcf994ab32131d7c7551a9bc960fbf05f42d55a1b930cbfb",
-    strip_prefix = "bazel_features-1.15.0",
-    url = "https://github.com/bazel-contrib/bazel_features/releases/download/v1.15.0/bazel_features-v1.15.0.tar.gz",
-)
+# NOTE: bazel_features disabled - causes @@cc_compatibility_proxy cycle with Bzlmod
+# maybe(
+#     http_archive,
+#     name = "bazel_features",
+#     sha256 = "ba1282c1aa1d1fffdcf994ab32131d7c7551a9bc960fbf05f42d55a1b930cbfb",
+#     strip_prefix = "bazel_features-1.15.0",
+#     url = "https://github.com/bazel-contrib/bazel_features/releases/download/v1.15.0/bazel_features-v1.15.0.tar.gz",
+# )
+# 
+# load("@bazel_features//:deps.bzl", "bazel_features_deps")
+# 
+# bazel_features_deps()
 
-load("@bazel_features//:deps.bzl", "bazel_features_deps")
-
-bazel_features_deps()
-
-maybe(
-    http_archive,
-    name = "rules_proto",
-    sha256 = "6fb6767d1bef535310547e03247f7518b03487740c11b6c6adb7952033fe1295",
-    strip_prefix = "rules_proto-6.0.2",
-    url = "https://github.com/bazelbuild/rules_proto/releases/download/6.0.2/rules_proto-6.0.2.tar.gz",
-)
+# NOTE: rules_proto is now managed via MODULE.bazel when Bzlmod is enabled
+# maybe(
+#     http_archive,
+#     name = "rules_proto",
+#     sha256 = "6fb6767d1bef535310547e03247f7518b03487740c11b6c6adb7952033fe1295",
+#     strip_prefix = "rules_proto-6.0.2",
+#     url = "https://github.com/bazelbuild/rules_proto/releases/download/6.0.2/rules_proto-6.0.2.tar.gz",
+# )
 
 # NOTE: rules_pkg is now managed via MODULE.bazel when Bzlmod is enabled
 # maybe(

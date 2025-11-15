@@ -14,7 +14,8 @@
 
 """ initializes the bazel_rules_hdl workspace """
 
-load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
+# NOTE: bazel_skylib workspace setup is handled by MODULE.bazel when Bzlmod is enabled
+# load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 # NOTE: protobuf_deps is handled by MODULE.bazel when Bzlmod is enabled
 # load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
 load("@rules_bison//bison:bison.bzl", "bison_register_toolchains")
@@ -66,7 +67,8 @@ def init(python_interpreter = None, python_interpreter_target = None):
     # NOTE: protobuf_deps() is handled by MODULE.bazel when Bzlmod is enabled
     # protobuf_deps()
 
-    bazel_skylib_workspace()
+    # NOTE: bazel_skylib_workspace() is handled by MODULE.bazel when Bzlmod is enabled
+    # bazel_skylib_workspace()
 
     m4_register_toolchains(version = "1.4.18")
     bison_register_toolchains(version = "3.3.2")

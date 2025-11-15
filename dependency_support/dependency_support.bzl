@@ -20,7 +20,6 @@ it.
 
 load("//dependency_support/at_clifford_icestorm:at_clifford_icestorm.bzl", "at_clifford_icestorm")
 load("//dependency_support/at_clifford_yosys:at_clifford_yosys.bzl", "at_clifford_yosys")
-load("//dependency_support/bazel_skylib:bazel_skylib.bzl", "bazel_skylib")
 load("//dependency_support/boost:boost.bzl", "boost")
 load("//dependency_support/com_github_davidkebo_cudd:com_github_davidkebo_cudd.bzl", "com_github_davidkebo_cudd")
 load("//dependency_support/com_github_fmtlib_fmt:com_github_fmtlib_fmt.bzl", "com_github_fmtlib_fmt")
@@ -32,11 +31,7 @@ load("//dependency_support/com_github_westes_flex:com_github_westes_flex.bzl", "
 load("//dependency_support/com_github_yosyshq_nextpnr:com_github_yosyshq_nextpnr.bzl", "com_github_yosyshq_nextpnr")
 load("//dependency_support/com_github_yosyshq_prjtrellis:com_github_yosyshq_prjtrellis.bzl", "com_github_yosyshq_prjtrellis")
 load("//dependency_support/com_github_yosyshq_prjtrellis_db:com_github_yosyshq_prjtrellis_db.bzl", "com_github_yosyshq_prjtrellis_db")
-load("//dependency_support/com_google_absl:com_google_absl.bzl", "com_google_absl")
-load("//dependency_support/com_google_googletest:com_google_googletest.bzl", "com_google_googletest")
 load("//dependency_support/com_google_ortools:com_google_ortools.bzl", "com_google_ortools")
-# NOTE: com_google_protobuf is now managed via MODULE.bazel when Bzlmod is enabled
-# load("//dependency_support/com_google_protobuf:com_google_protobuf.bzl", "com_google_protobuf")
 load("//dependency_support/com_google_skywater_pdk:com_google_skywater_pdk.bzl", "com_google_skywater_pdk")
 load("//dependency_support/com_icarus_iverilog:com_icarus_iverilog.bzl", "com_icarus_iverilog")
 load("//dependency_support/com_opencircuitdesign_magic:com_opencircuitdesign_magic.bzl", "com_opencircuitdesign_magic")
@@ -75,7 +70,8 @@ def dependency_support(register_toolchains = True):
     """
     at_clifford_icestorm()
     at_clifford_yosys()
-    bazel_skylib()
+    # NOTE: bazel_skylib is now managed via MODULE.bazel when Bzlmod is enabled
+    # bazel_skylib()
     boost()
     com_github_fmtlib_fmt()
     com_github_gabime_spdlog()
@@ -87,8 +83,10 @@ def dependency_support(register_toolchains = True):
     com_github_yosyshq_nextpnr()
     com_github_yosyshq_prjtrellis()
     com_github_yosyshq_prjtrellis_db()
-    com_google_absl()
-    com_google_googletest()
+    # NOTE: com_google_absl is now managed via MODULE.bazel when Bzlmod is enabled
+    # com_google_absl()
+    # NOTE: com_google_googletest is now managed via MODULE.bazel when Bzlmod is enabled
+    # com_google_googletest()
     # NOTE: com_google_protobuf is now managed via MODULE.bazel when Bzlmod is enabled
     # com_google_protobuf()
     com_google_ortools()

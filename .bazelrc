@@ -19,7 +19,8 @@ build --cxxopt "-std=c++17"
 build --cxxopt "-ffp-contract=off"
 build --host_cxxopt "-std=c++17"
 build --host_cxxopt "-ffp-contract=off"
-build --crosstool_top=@llvm_toolchain//:toolchain
+# NOTE: LLVM toolchain causes conflicts with Bzlmod; use platform-specific configs instead
+# build --crosstool_top=@llvm_toolchain//:toolchain
 
 build:ciremotebuild --crosstool_top=@llvm_toolchain//:toolchain
 build:ciremotebuild --bes_backend=grpcs://cloud.buildbuddy.io
@@ -55,6 +56,14 @@ build --incompatible_disallow_empty_glob=true
 # macOS ARM64 configuration: Use system toolchain instead of LLVM
 build:macos --crosstool_top=@bazel_tools//tools/cpp:toolchain
 build:macos --host_crosstool_top=@bazel_tools//tools/cpp:toolchain
+build:macos --copt=-isysroot
+build:macos --copt=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+build:macos --linkopt=-isysroot
+build:macos --linkopt=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+build:macos --host_copt=-isysroot
+build:macos --host_copt=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+build:macos --host_linkopt=-isysroot
+build:macos --host_linkopt=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
 
 ###############################################################################
 ## User flags

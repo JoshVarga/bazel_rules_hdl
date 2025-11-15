@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# NOTE: This repository is migrating to Bzlmod (MODULE.bazel).
+# The WORKSPACE file is maintained for dependencies not yet available in the Bazel Central Registry.
+# Core dependencies (rules_cc, rules_proto, protobuf, rules_python) are managed in MODULE.bazel.
+
 workspace(name = "rules_hdl")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
@@ -151,23 +155,24 @@ maybe(
     url = "https://github.com/bazelbuild/rules_proto/releases/download/6.0.2/rules_proto-6.0.2.tar.gz",
 )
 
-maybe(
-    http_archive,
-    name = "rules_pkg",
-    sha256 = "a89e203d3cf264e564fcb96b6e06dd70bc0557356eb48400ce4b5d97c2c3720d",
-    urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_pkg/releases/download/0.5.1/rules_pkg-0.5.1.tar.gz",
-        "https://github.com/bazelbuild/rules_pkg/releases/download/0.5.1/rules_pkg-0.5.1.tar.gz",
-    ],
-)
+# NOTE: rules_pkg is now managed via MODULE.bazel when Bzlmod is enabled
+# maybe(
+#     http_archive,
+#     name = "rules_pkg",
+#     sha256 = "a89e203d3cf264e564fcb96b6e06dd70bc0557356eb48400ce4b5d97c2c3720d",
+#     urls = [
+#         "https://mirror.bazel.build/github.com/bazelbuild/rules_pkg/releases/download/0.5.1/rules_pkg-0.5.1.tar.gz",
+#         "https://github.com/bazelbuild/rules_pkg/releases/download/0.5.1/rules_pkg-0.5.1.tar.gz",
+#     ],
+# )
 
-load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
+# load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 
-rules_pkg_dependencies()
+# rules_pkg_dependencies()
 
-load("@rules_pkg//toolchains:rpmbuild.bzl", "rpmbuild_register_toolchains")
+# load("@rules_pkg//toolchains:rpmbuild.bzl", "rpmbuild_register_toolchains")
 
-rpmbuild_register_toolchains()
+# rpmbuild_register_toolchains()
 
 # Third Party
 load("//dependency_support:dependency_support.bzl", "dependency_support")

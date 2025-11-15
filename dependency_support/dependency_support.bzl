@@ -35,7 +35,8 @@ load("//dependency_support/com_github_yosyshq_prjtrellis_db:com_github_yosyshq_p
 load("//dependency_support/com_google_absl:com_google_absl.bzl", "com_google_absl")
 load("//dependency_support/com_google_googletest:com_google_googletest.bzl", "com_google_googletest")
 load("//dependency_support/com_google_ortools:com_google_ortools.bzl", "com_google_ortools")
-load("//dependency_support/com_google_protobuf:com_google_protobuf.bzl", "com_google_protobuf")
+# NOTE: com_google_protobuf is now managed via MODULE.bazel when Bzlmod is enabled
+# load("//dependency_support/com_google_protobuf:com_google_protobuf.bzl", "com_google_protobuf")
 load("//dependency_support/com_google_skywater_pdk:com_google_skywater_pdk.bzl", "com_google_skywater_pdk")
 load("//dependency_support/com_icarus_iverilog:com_icarus_iverilog.bzl", "com_icarus_iverilog")
 load("//dependency_support/com_opencircuitdesign_magic:com_opencircuitdesign_magic.bzl", "com_opencircuitdesign_magic")
@@ -88,7 +89,8 @@ def dependency_support(register_toolchains = True):
     com_github_yosyshq_prjtrellis_db()
     com_google_absl()
     com_google_googletest()
-    com_google_protobuf()
+    # NOTE: com_google_protobuf is now managed via MODULE.bazel when Bzlmod is enabled
+    # com_google_protobuf()
     com_google_ortools()
     com_google_skywater_pdk()
     com_icarus_iverilog()

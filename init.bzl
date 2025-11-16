@@ -14,62 +14,34 @@
 
 """ initializes the bazel_rules_hdl workspace """
 
-# NOTE: bazel_skylib workspace setup is handled by MODULE.bazel when Bzlmod is enabled
-# load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
-# NOTE: protobuf_deps is handled by MODULE.bazel when Bzlmod is enabled
-# load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
 load("@rules_bison//bison:bison.bzl", "bison_register_toolchains")
 load("@rules_flex//flex:flex.bzl", "flex_register_toolchains")
 load("@rules_m4//m4:m4.bzl", "m4_register_toolchains")
-# NOTE: rules_proto dependencies are handled by MODULE.bazel when Bzlmod is enabled
-# load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies")
-# load("@rules_proto//proto:toolchains.bzl", "rules_proto_toolchains")
-load("//dependency_support:requirements.bzl", install_pip_deps = "install_deps")
+# NOTE: Pip dependencies are handled by MODULE.bazel when Bzlmod is enabled
+# load("//dependency_support:requirements.bzl", install_pip_deps = "install_deps")
 load("//dependency_support/boost:init_boost.bzl", "init_boost")
 
-def init(python_interpreter = None, python_interpreter_target = None):
+def init(python_interpreter = None, python_interpreter_target = None):  # @unused pylint: disable=unused-argument
     """Initializes the bazel_rules_hdl workspace.
 
     If @bazel_rules_hdl is imported into another Bazel workspace, that workspace
     must call `init` to allow @bazel_rules_hdl to set itself up.
 
-    `python_interpreter` and `python_interpreter_target` are passed to
-    @bazel_rules_hdl's vendored requirements.bzl `install_deps`. If unspecified,
-    this project's default toolchain will be used. If the outside workspace has
-    a custom Python toolchain configured, these should be set, otherwise
-    @bazel_rules_hdl will not use the right Python toolchain when installing
-    pip dependencies.
+    NOTE: python_interpreter and python_interpreter_target parameters are kept
+    for backward compatibility but are no longer used when Bzlmod is enabled,
+    as Python dependencies are managed via MODULE.bazel.
 
     Args:
-      python_interpreter: Path to external Python interpreter to use with
-        `install_deps` for PyPI dependencies. This can be an absolute path or
-        relative to the host's `PATH` environment variable.
-      python_interpreter_target: Bazel target of a Python interpreter to build
-        to use with `install_deps` for PyPI dependencies. Using
-        `python_interpreter_target` makes it possible to have a hermetic
-        Python toolchain. `python_interpreter_target` takes precedence over
-        `python_interpreter` if both are set.
+      python_interpreter: (Deprecated when using Bzlmod) Path to external Python interpreter.
+      python_interpreter_target: (Deprecated when using Bzlmod) Bazel target of a Python interpreter.
     """
 
     # NOTE: rules_proto dependencies are handled by MODULE.bazel when Bzlmod is enabled
     # rules_proto_dependencies()
     # rules_proto_toolchains()
 
-    install_deps_kwargs = {}
-    if python_interpreter:
-        install_deps_kwargs["python_interpreter"] = python_interpreter
-    if python_interpreter_target:
-        install_deps_kwargs["python_interpreter_target"] = python_interpreter_target
-    install_pip_deps(**install_deps_kwargs)
 
     init_boost()
-
-    # NOTE: protobuf_deps() is handled by MODULE.bazel when Bzlmod is enabled
-    # protobuf_deps()
-
-    # NOTE: bazel_skylib_workspace() is handled by MODULE.bazel when Bzlmod is enabled
-    # bazel_skylib_workspace()
-
     m4_register_toolchains(version = "1.4.18")
     bison_register_toolchains(version = "3.3.2")
     flex_register_toolchains(version = "2.6.4")

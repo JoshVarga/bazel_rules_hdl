@@ -51,32 +51,33 @@ load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 
 # bazel_skylib_workspace()
 
-maybe(
-    http_archive,
-    name = "rules_python",
-    sha256 = "e3f1cc7a04d9b09635afb3130731ed82b5f58eadc8233d4efb59944d92ffc06f",
-    strip_prefix = "rules_python-0.33.2",
-    url = "https://github.com/bazelbuild/rules_python/releases/download/0.33.2/rules_python-0.33.2.tar.gz",
-)
-
-load(
-    "@rules_python//python:repositories.bzl",
-    "py_repositories",
-    "python_register_toolchains",
-)
-
-# Must be called before using anything from rules_python.
-# https://github.com/bazelbuild/rules_python/issues/1560#issuecomment-1815118394
-py_repositories()
-
-python_register_toolchains(
-    name = "python39",
-
-    # Required for our containerized CI environments; we do not recommend
-    # building bazel_rules_hdl as root normally.
-    ignore_root_user_error = True,
-    python_version = "3.9",
-)
+# NOTE: rules_python is now managed via MODULE.bazel when Bzlmod is enabled
+# maybe(
+#     http_archive,
+#     name = "rules_python",
+#     sha256 = "e3f1cc7a04d9b09635afb3130731ed82b5f58eadc8233d4efb59944d92ffc06f",
+#     strip_prefix = "rules_python-0.33.2",
+#     url = "https://github.com/bazelbuild/rules_python/releases/download/0.33.2/rules_python-0.33.2.tar.gz",
+# )
+# 
+# load(
+#     "@rules_python//python:repositories.bzl",
+#     "py_repositories",
+#     "python_register_toolchains",
+# )
+# 
+# # Must be called before using anything from rules_python.
+# # https://github.com/bazelbuild/rules_python/issues/1560#issuecomment-1815118394
+# py_repositories()
+# 
+# python_register_toolchains(
+#     name = "python39",
+# 
+#     # Required for our containerized CI environments; we do not recommend
+#     # building bazel_rules_hdl as root normally.
+#     ignore_root_user_error = True,
+#     python_version = "3.9",
+# )
 
 # This sysroot is used by github.com/vsco/bazel-toolchains.
 # Disabled for now waiting on https://github.com/pybind/pybind11_bazel/pull/29
@@ -190,12 +191,13 @@ load("//:init.bzl", "init")
 
 init()
 
-load("@rules_python//python:pip.bzl", "pip_parse")
-
-# Used only by the rules that vendor requirements.bzl
-# Not needed by users of rules_hdl.
-pip_parse(
-    name = "rules_hdl_pip_deps_to_vendor",
-    python_interpreter_target = "@python39_host//:python",
-    requirements_lock = "//dependency_support:pip_requirements.txt",
-)
+# NOTE: pip_parse is now managed via MODULE.bazel when Bzlmod is enabled
+# load("@rules_python//python:pip.bzl", "pip_parse")
+# 
+# # Used only by the rules that vendor requirements.bzl
+# # Not needed by users of rules_hdl.
+# pip_parse(
+#     name = "rules_hdl_pip_deps_to_vendor",
+#     python_interpreter_target = "@python39_host//:python",
+#     requirements_lock = "//dependency_support:pip_requirements.txt",
+# )
